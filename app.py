@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+import streamlit as st
+from google import genai
+# ... بقیه کد ...
 import streamlit as st
 from google import genai
 from PIL import Image # نیاز به این کتابخانه برای پردازش تصویر
@@ -61,3 +66,4 @@ if st.button("اعمال جادو", type="primary"):
 
         except Exception as e:
             st.error(f"متاسفانه خطایی رخ داد: {e}")
+
