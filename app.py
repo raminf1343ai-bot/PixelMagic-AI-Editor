@@ -8,9 +8,7 @@ from google import genai
 from PIL import Image # نیاز به این کتابخانه برای پردازش تصویر
 
 # --- ۱. تعریف نقش (System Prompt) ---
-SYSTEM_INSTRUCTION = "تو یک ویرایشگر تصویر خلاق به نام PixelMagic هستی. کار تو بررسی عکس کاربر و دستورات ویرایش اوست و سپس ارائه یک ایده یا پیشنهاد ویرایش فانتزی و هنری برای آن عکس است. لحن تو باید هیجان‌انگیز باشد."
-
-# --- ۲. رابط کاربری (Frontend) و تنظیم کلید ---
+SYSTEM_INSTRUCTION = "SYSTEM_INSTRUCTION = "You are PixelMagic AI editor, giving artistic suggestions." 
 st.set_page_config(page_title="✨ PixelMagic AI Editor", layout="centered")
 st.title("✨ PixelMagic AI Editor")
 
@@ -66,4 +64,5 @@ if st.button("اعمال جادو", type="primary"):
 
         except Exception as e:
             st.error(f"متاسفانه خطایی رخ داد: {e}")
+
 
