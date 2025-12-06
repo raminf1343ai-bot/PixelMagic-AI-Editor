@@ -1,68 +1,62 @@
 # -*- coding: utf-8 -*-
+# Adding the encoding hint just in case
 
 import streamlit as st
 from google import genai
-# ... بقیه کد ...
-import streamlit as st
-from google import genai
-from PIL import Image # نیاز به این کتابخانه برای پردازش تصویر
+from PIL import Image
 
-# --- ۱. تعریف نقش (System Prompt) ---
-SYSTEM_INSTRUCTION = "SYSTEM_INSTRUCTION = "You are PixelMagic AI editor, giving artistic suggestions." 
+# --- 1. System Prompt (English) ---
+SYSTEM_INSTRUCTION = "You are PixelMagic AI editor, giving creative and artistic image editing suggestions based on the user's uploaded photo and request."
+
+# --- 2. Frontend & Key Setup ---
 st.set_page_config(page_title="✨ PixelMagic AI Editor", layout="centered")
 st.title("✨ PixelMagic AI Editor")
 
-# فراخوانی کلید امنیتی
+# API Key Check (The key is safe in Secrets)
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"]
 except KeyError:
-    st.error("خطا: کلید API در Streamlit Secrets تنظیم نشده است.")
+    st.error("Error: API Key not configured in Streamlit Secrets.")
     st.stop()
 
 client = genai.Client(api_key=API_KEY)
 
-# --- ۳. کامپوننت آپلود عکس ---
+# --- 3. File Uploader Component ---
 uploaded_file = st.file_uploader(
-    "یک عکس برای اعمال جادو آپلود کنید 🪄", 
+    "Upload a photo for editing 🪄", 
     type=["png", "jpg", "jpeg"]
 )
 
-# --- ۴. دریافت دستور ویرایش ---
+# --- 4. Get Edit Command ---
 user_prompt = st.text_area(
-    "دستور ویرایش خود را وارد کنید (مثلاً: آن را به سبک نقاشی ون گوگ در بیاورید).", 
-    placeholder="چه چیزی در عکس تغییر کند؟"
+    "Enter your editing command (e.g., 'Make it look like a Van Gogh painting').", 
+    placeholder="What should change in the image?"
 )
 
-# --- ۵. منطق پردازش (Multimodal) ---
-if st.button("اعمال جادو", type="primary"):
+# --- 5. Processing Logic ---
+if st.button("Apply Magic", type="primary"):
     if uploaded_file is None:
-        st.warning("لطفاً ابتدا یک فایل عکس آپلود کنید.")
+        st.warning("Please upload a photo first.")
     elif not user_prompt:
-        st.warning("لطفاً دستور ویرایش خود را وارد کنید.")
+        st.warning("Please enter your editing command.")
     else:
-        # ساخت محتوای چندوجهی (عکس + متن)
         try:
-            # الف) باز کردن تصویر
             image = Image.open(uploaded_file)
-            st.image(image, caption='عکس آپلود شده', use_column_width=True)
+            st.image(image, caption='Uploaded Photo', use_column_width=True)
             
-            # ب) ساخت لیست محتوا برای Gemini (ترکیب تصویر و متن)
             contents = [
-                f"دستور سیستمی: {SYSTEM_INSTRUCTION}",
-                image, # تصویر
-                f"دستور کاربر: {user_prompt}" # متن
+                f"System Instruction: {SYSTEM_INSTRUCTION}",
+                image,
+                f"User Command: {user_prompt}"
             ]
 
-            with st.spinner('PixelMagic در حال پردازش...'):
-                # فراخوانی مدل (Multimodal Call)
+            with st.spinner('PixelMagic Processing...'):
                 response = client.models.generate_content(
                     model="gemini-1.5-flash", 
                     contents=contents 
                 )
                 
-                st.success(f"✅ پیشنهاد نهایی: {response.text}")
+                st.success(f"✅ Final Suggestion: {response.text}")
 
         except Exception as e:
-            st.error(f"متاسفانه خطایی رخ داد: {e}")
-
-
+            st.error(f"An error occurred: {e}")
